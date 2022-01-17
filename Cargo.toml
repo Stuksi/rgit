@@ -4,5 +4,10 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+getset = "0.1.2"
+chrono = "0.4.19"
+camino = "1.0.7"
 
 [dev-dependencies]
+tempdir = "0.3.7"
+serial_test = "0.5.1"
