@@ -14,7 +14,11 @@ pub struct Head {
 }
 
 impl Head {
-  pub fn read() -> Result<Self, Errors> {
+  pub fn get() -> Result<Self, Errors> {
+    todo!()
+  }
+
+  pub fn set(reference: Reference) -> Result<Self, Errors> {
     todo!()
   }
 

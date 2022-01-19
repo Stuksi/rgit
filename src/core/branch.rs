@@ -12,23 +12,23 @@ pub struct Branch {
 }
 
 impl Branch {
-  pub fn create(name: &str, commit_id: &str) -> Result<(), Errors> {
+  pub fn new(name: &str, commit_id: &str) -> Result<Self, Errors> {
     todo!()
   }
 
-  pub fn read(name: &str) -> Result<Self, Errors> {
+  pub fn get(name: &str) -> Result<Self, Errors> {
     todo!()
   }
 
-  pub fn update(name: &str, commit_id: &str) -> Result<(), Errors> {
+  pub fn set(name: &str, commit_id: &str) -> Result<(), Errors> {
     todo!()
   }
 
-  pub fn delete(name: &str) -> Result<(), Errors> {
+  pub fn remove(name: &str) -> Result<(), Errors> {
     todo!()
   }
 
-  pub fn commit() -> Option<Commit> {
+  pub fn commit(&self) -> Option<Commit> {
     todo!()
   }
 }
