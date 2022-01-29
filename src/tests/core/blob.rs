@@ -24,8 +24,8 @@ fn new_given_bytes_creates_blob() {
 #[serial]
 fn from_id_given_non_existing_id_return_unknown_object_error() {
   run_unit(|| {
-    if let Err(Errors::UnknownObjectError(id)) = <Blob as FromId>::from("non-existing-id") {
-      assert_eq!(id, "non-existing-id");
+    if let Err(Errors::UnknownObjectError(id)) = Blob::from_id("invalid-id") {
+      assert_eq!(id, "invalid-id");
     } else {
       unreachable!();
     }
@@ -37,7 +37,7 @@ fn from_id_given_non_existing_id_return_unknown_object_error() {
 fn from_id_given_existing_id_returns_blob() {
   run_unit(|| {
     let blob = Blob::new(DUMMY_TEXT).unwrap();
-    let from_blob = <Blob as FromId>::from(blob.id()).unwrap();
+    let from_blob = Blob::from_id(blob.id()).unwrap();
 
     assert_eq!(blob, from_blob);
   });

@@ -1,12 +1,13 @@
 #[derive(Debug)]
 pub enum Errors {
   UnknownObjectError(String),
-  ExistingRepositoryError,
   BadObjectStructureError,
+  ExistingRepositoryError,
   InvalidTreeNodeError,
   NodeConvertionError,
   InvalidUsernameOrEmail,
-
+  DuplicateBranchNameError(String),
+  MissingBranchError(String),
   IOError(std::io::Error),
   Utf8ConvertionError(std::string::FromUtf8Error),
   DateTimeParseError(chrono::ParseError),

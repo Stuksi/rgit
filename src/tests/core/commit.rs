@@ -30,8 +30,8 @@ fn new_given_parent_commit_and_tree_creates_commit() {
 #[serial]
 fn new_given_invalid_tree_returns_error() {
   run_unit(|| {
-    if let Err(Errors::UnknownObjectError(id)) = Commit::new(None, "invalid_id") {
-      assert_eq!(id, "invalid_id");
+    if let Err(Errors::UnknownObjectError(id)) = Commit::new(None, "invalid-id") {
+      assert_eq!(id, "invalid-id");
     } else {
       unreachable!();
     }
@@ -64,7 +64,7 @@ fn parent_returns_the_associated_parent_commit() {
 #[serial]
 fn parent_returns_none_if_the_parent_id_is_invalid() {
   run_unit(|| {
-    let commit = Commit::new(Some("invalid_id"), tree().id()).unwrap();
+    let commit = Commit::new(Some("invalid-id"), tree().id()).unwrap();
 
     assert_eq!(commit.parent(), None);
   });
@@ -75,7 +75,7 @@ fn parent_returns_none_if_the_parent_id_is_invalid() {
 fn from_id_given_existing_id_returns_commit() {
   run_unit(|| {
     let commit = Commit::new(None, tree().id()).unwrap();
-    let from_commit = <Commit as FromId>::from(commit.id()).unwrap();
+    let from_commit = Commit::from_id(commit.id()).unwrap();
 
     assert_eq!(commit, from_commit);
   });

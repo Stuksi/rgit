@@ -213,7 +213,7 @@ fn from_id_given_existing_id_returns_tree() {
 
     root.pack().unwrap();
 
-    let tree = <Tree as FromId>::from(root.id()).unwrap();
+    let tree = Tree::from_id(root.id()).unwrap();
 
     assert_eq!(root, tree);
   });

@@ -1,5 +1,5 @@
 use lipsum::lipsum;
-use crate::core::{blob::Blob, tree::{Tree, Node}, commit::Commit};
+use crate::core::{blob::Blob, tree::{Tree, Node}, commit::Commit, branch::Branch};
 
 const TREE_PATHS: &[&str] = &[
   "a/a/a", "a/a/b", "a/a/c",
@@ -35,4 +35,8 @@ pub fn tree() -> Tree {
 
 pub fn commit() -> Commit {
   Commit::new(None, tree().id()).unwrap()
+}
+
+pub fn branch() -> Branch {
+  Branch::new(&lipsum(25), Some(commit().id())).unwrap()
 }

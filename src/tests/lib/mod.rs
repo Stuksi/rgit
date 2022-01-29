@@ -21,7 +21,15 @@ fn initialize_creates_the_repository_folder_in_the_current_locale() {
     let mut config = String::new();
     File::open(locale.join(".rgit/config")).unwrap().read_to_string(&mut config).unwrap();
 
+    let mut head = String::new();
+    File::open(locale.join(".rgit/HEAD")).unwrap().read_to_string(&mut head).unwrap();
+
+    let mut master = String::new();
+    File::open(locale.join(".rgit/branches/master")).unwrap().read_to_string(&mut master).unwrap();
+
     assert_eq!(config, "admin admin");
+    assert_eq!(head, "master");
+    assert_eq!(master, "");
   });
 }
 

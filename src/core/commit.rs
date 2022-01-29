@@ -52,13 +52,13 @@ impl Commit {
   }
 
   pub fn tree(&self) -> Result<Tree, Errors> {
-    <Tree as FromId>::from(self.tree_id())
+    Tree::from_id(self.tree_id())
   }
 
   pub fn parent(&self) -> Option<Commit> {
     match self.parent_id() {
       Some(id) => {
-        let parent = <Commit as FromId>::from(&id);
+        let parent = Commit::from_id(&id);
         if let Ok(commit) = parent {
           Some(commit)
         } else {
@@ -71,7 +71,7 @@ impl Commit {
 }
 
 impl FromId for Commit {
-  fn from(id: &str) -> Result<Self, Errors> {
+  fn from_id(id: &str) -> Result<Self, Errors> {
     let bytes = read_object_bytes(id)?;
     let text = String::from_utf8(bytes)?;
 

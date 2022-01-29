@@ -15,7 +15,7 @@ impl Blob {
 }
 
 impl FromId for Blob {
-  fn from(id: &str) -> Result<Blob, Errors> {
+  fn from_id(id: &str) -> Result<Blob, Errors> {
     let location = locale().join(OBJECTS_PATH).join(&id[..2]).join(&id[2..]);
 
     if !location.exists() {

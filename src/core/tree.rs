@@ -156,7 +156,7 @@ impl Tree {
 }
 
 impl FromId for Tree {
-  fn from(id: &str) -> Result<Self, Errors> {
+  fn from_id(id: &str) -> Result<Self, Errors> {
     let bytes = read_object_bytes(id)?;
     let text = String::from_utf8(bytes)?;
     let mut children = HashMap::new();
@@ -164,8 +164,8 @@ impl FromId for Tree {
     for line in text.lines() {
       if let [object_type, name, id] = line.split_whitespace().collect::<Vec<&str>>()[..] {
         let node = match object_type {
-          BLOB_TYPE => Node::Blob(<Blob as FromId>::from(id)?),
-          TREE_TYPE => Node::Tree(<Tree as FromId>::from(id)?),
+          BLOB_TYPE => Node::Blob(Blob::from_id(id)?),
+          TREE_TYPE => Node::Tree(Tree::from_id(id)?),
           _ => return Err(Errors::InvalidTreeNodeError),
         };
 

@@ -1,7 +1,7 @@
 use super::errors::Errors;
 
 pub trait FromId {
-  fn from(id: &str) -> Result<Self, Errors> where Self: Sized;
+  fn from_id(id: &str) -> Result<Self, Errors> where Self: Sized;
 }
 
 pub enum Object {

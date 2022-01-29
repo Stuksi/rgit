@@ -26,11 +26,12 @@ pub fn initialize() -> Result<(), Errors> {
   let head = locale.join(HEAD_PATH);
   let config = locale.join(CONFIG_PATH);
 
-  fs::create_dir_all(repository)?;
-  fs::create_dir_all(objects)?;
-  fs::create_dir_all(branches)?;
+  fs::create_dir_all(&repository)?;
+  fs::create_dir_all(&objects)?;
+  fs::create_dir_all(&branches)?;
 
-  File::create(head)?;
+  File::create(branches.join("master"))?;
+  File::create(head)?.write_all(b"master")?;
   File::create(config)?.write_all(b"admin admin")?;
 
   Ok(())
