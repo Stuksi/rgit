@@ -1,6 +1,6 @@
 use std::{fs::File, io::Read};
 use serial_test::serial;
-use crate::{core::tree::{Tree, Node}, tests::{run_unit, gens::{blob, blob_with_text}}, lib::{errors::Errors, decompress, locale, constants::OBJECTS_PATH, object::{Object, FromId}}};
+use crate::{core::tree::{Tree, Node}, tests::{run_unit, gens::{blob, blob_and_text}}, lib::{decompress, locale, constants::OBJECTS_PATH, object::FromId}};
 
 #[test]
 #[serial]
@@ -182,8 +182,8 @@ fn pack_compresses_and_saves_the_tree_inside_the_repository_and_modifies_and_ret
 fn unpack_given_path_directory_prefix_creates_directories_and_files_based_on_the_tree_structure() {
   run_unit(|| {
     let mut root = Tree::new();
-    let (blob_1, text_1) = blob_with_text();
-    let (blob_2, text_2) = blob_with_text();
+    let (blob_1, text_1) = blob_and_text();
+    let (blob_2, text_2) = blob_and_text();
 
     root.insert("blob", Node::Blob(blob_1.clone()));
     root.insert("tree/blob", Node::Blob(blob_2.clone()));

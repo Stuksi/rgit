@@ -175,6 +175,11 @@ impl FromId for Tree {
       }
     }
 
-    Ok(Tree { id: String::from(id), children })
+    Ok(
+      Tree {
+        id: String::from(id),
+        children,
+      }
+    )
   }
 }

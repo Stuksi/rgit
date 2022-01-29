@@ -17,7 +17,7 @@ pub fn blob() -> Blob {
   Blob::new(lipsum(25).as_bytes()).unwrap()
 }
 
-pub fn blob_with_text() -> (Blob, String) {
+pub fn blob_and_text() -> (Blob, String) {
   let text = lipsum(25);
   (Blob::new(text.as_bytes()).unwrap(), text)
 }

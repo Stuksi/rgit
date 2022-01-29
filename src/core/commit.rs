@@ -40,13 +40,15 @@ impl Commit {
     );
     let id = write_object_bytes(Object::Commit, bytes)?;
 
-    Ok(Commit {
-      id,
-      parent_id: parent_id.map(|id| String::from(id)),
-      tree_id: String::from(tree_id),
-      date,
-      author: User::get()?,
-    })
+    Ok(
+      Commit {
+        id,
+        parent_id: parent_id.map(|id| String::from(id)),
+        tree_id: String::from(tree_id),
+        date,
+        author: User::get()?,
+      }
+    )
   }
 
   pub fn tree(&self) -> Result<Tree, Errors> {

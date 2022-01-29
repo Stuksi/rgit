@@ -22,6 +22,10 @@ impl FromId for Blob {
       return Err(Errors::UnknownObjectError(String::from(id)));
     }
 
-    Ok(Blob { id: String::from(id) })
+    Ok(
+      Blob {
+        id: String::from(id),
+      }
+    )
   }
 }

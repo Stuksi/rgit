@@ -1,8 +1,6 @@
 use std::{fs::{File, OpenOptions}, io::{Read, Write}};
-
 use getset::Getters;
 use crate::lib::errors::Errors;
-
 use super::{locale, constants::CONFIG_PATH};
 
 #[derive(Getters, Debug, PartialEq, Clone)]
