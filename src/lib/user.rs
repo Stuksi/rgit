@@ -14,10 +14,6 @@ pub struct User {
 
 impl User {
   pub fn new(username: &str, email: &str) -> Result<Self, Errors> {
-    if username.contains(" ") || email.contains(" ") {
-      return Err(Errors::InvalidUsernameOrEmail)
-    }
-
     Ok(
       User {
         username: String::from(username),
@@ -45,10 +41,6 @@ impl User {
   }
 
   pub fn set(username: &str, email: &str) -> Result<(), Errors> {
-    if username.contains(" ") || email.contains(" ") {
-      return Err(Errors::InvalidUsernameOrEmail)
-    }
-
     let location = locale().join(CONFIG_PATH);
     let config = format!("{} {}", username, email);
 

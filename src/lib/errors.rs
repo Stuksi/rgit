@@ -5,7 +5,7 @@ pub enum Errors {
   ExistingRepositoryError,
   InvalidTreeNodeError,
   NodeConvertionError,
-  InvalidUsernameOrEmail,
+  UnrecognisedPath(String),
   DuplicateBranchNameError(String),
   MissingBranchError(String),
   IOError(std::io::Error),

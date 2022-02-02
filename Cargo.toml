@@ -10,6 +10,7 @@ camino = "1.0.7"
 sha-1 = "0.10.0"
 flate2 = "1.0.22"
 hex = "0.4.3"
+pathdiff = { version = "0.2.1", features = ["camino"] }
 
 [dev-dependencies]
 tempdir = "0.3.7"

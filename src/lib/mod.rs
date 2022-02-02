@@ -4,13 +4,18 @@ pub mod user;
 pub mod object;
 
 use std::{env, io::{Read, Write}, fs::{File, self}};
-use camino::Utf8PathBuf;
+use camino::{Utf8PathBuf, Utf8Path};
 use flate2::{read::{ZlibEncoder, ZlibDecoder}, Compression};
+use pathdiff::diff_utf8_paths;
 use sha1::{Sha1, Digest};
-use self::{errors::Errors, constants::{PROJECT_ENV, OBJECTS_PATH, BLOB_TYPE, TREE_TYPE, COMMIT_TYPE, REPOSITORY_PATH, BRANCHES_PATH, HEAD_PATH, CONFIG_PATH}, object::Object};
+use self::{errors::Errors, constants::*, object::Object};
 
 pub fn locale() -> Utf8PathBuf {
   Utf8PathBuf::from(env::var(PROJECT_ENV).unwrap())
+}
+
+pub fn locale_relative<P: AsRef<Utf8Path>>(path: P) -> Utf8PathBuf {
+  diff_utf8_paths(path.as_ref(), locale()).unwrap_or(Utf8PathBuf::from(""))
 }
 
 pub fn initialize() -> Result<(), Errors> {
@@ -25,6 +30,7 @@ pub fn initialize() -> Result<(), Errors> {
   let branches = locale.join(BRANCHES_PATH);
   let head = locale.join(HEAD_PATH);
   let config = locale.join(CONFIG_PATH);
+  let index = locale.join(INDEX_PATH);
 
   fs::create_dir_all(&repository)?;
   fs::create_dir_all(&objects)?;
@@ -33,6 +39,7 @@ pub fn initialize() -> Result<(), Errors> {
   File::create(branches.join("master"))?;
   File::create(head)?.write_all(b"master")?;
   File::create(config)?.write_all(b"admin admin")?;
+  File::create(index)?;
 
   Ok(())
 }

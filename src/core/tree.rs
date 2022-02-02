@@ -64,7 +64,7 @@ impl Tree {
   pub fn insert<P: AsRef<Utf8Path>>(&mut self, path: P, node: Node) {
     let path = path.as_ref();
 
-    if !path.to_string().contains(std::path::is_separator) {
+    if !path.as_str().contains(std::path::is_separator) {
       self.children.insert(path.to_string(), node);
       return;
     }
@@ -84,8 +84,8 @@ impl Tree {
   pub fn remove<P: AsRef<Utf8Path>>(&mut self, path: P) {
     let path = path.as_ref();
 
-    if !path.to_string().contains(std::path::is_separator) {
-      self.children.remove(&path.to_string());
+    if !path.as_str().contains(std::path::is_separator) {
+      self.children.remove(path.as_str());
       return;
     }
 
@@ -100,8 +100,8 @@ impl Tree {
   pub fn get<P: AsRef<Utf8Path>>(&self, path: P) -> Option<&Node> {
     let path = path.as_ref();
 
-    if !path.to_string().contains(std::path::is_separator) {
-      return self.children.get(&path.to_string());
+    if !path.as_str().contains(std::path::is_separator) {
+      return self.children.get(path.as_str());
     }
 
     let mut it = path.iter();

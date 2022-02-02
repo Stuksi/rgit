@@ -4,9 +4,6 @@ use crate::{lib::user::User, tests::run_unit};
 const USERNAME: &str = "Jeremy";
 const EMAIL: &str = "jeremy@mail.com";
 
-const INVALID_USERNAME: &str = "Oh' mister";
-const INVALID_EMAIL: &str = "jeremy @ mail.com";
-
 const ADMIN: &str = "admin";
 
 #[test]
@@ -17,20 +14,6 @@ fn new_given_username_and_email_creates_user() {
 
     assert_eq!(user.username(), USERNAME);
     assert_eq!(user.email(), EMAIL);
-  });
-}
-
-#[test]
-#[serial]
-fn new_given_invalid_username_or_email_returns_error() {
-  run_unit(|| {
-    if let Ok(_) = User::new(INVALID_USERNAME, EMAIL) {
-      unreachable!();
-    }
-
-    if let Ok(_) = User::new(USERNAME, INVALID_EMAIL) {
-      unreachable!();
-    }
   });
 }
 
@@ -54,19 +37,5 @@ fn set_given_username_and_email_changes_the_current_user() {
 
     assert_eq!(user.username(), USERNAME);
     assert_eq!(user.email(), EMAIL);
-  });
-}
-
-#[test]
-#[serial]
-fn set_given_invalid_username_or_email_returns_error() {
-  run_unit(|| {
-    if let Ok(_) = User::set(INVALID_USERNAME, EMAIL) {
-      unreachable!();
-    }
-
-    if let Ok(_) = User::set(USERNAME, INVALID_EMAIL) {
-      unreachable!();
-    }
   });
 }
