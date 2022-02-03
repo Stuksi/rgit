@@ -34,7 +34,6 @@ impl Index {
 
     for path in paths {
       let relative_path = locale_relative(&path);
-      println!("{:?}", index.staged_paths.keys());
       index.staged_paths.remove(relative_path.as_str());
     }
 

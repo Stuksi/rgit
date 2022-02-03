@@ -1,6 +1,7 @@
 [package]
 name = "rgit"
 version = "0.1.0"
+author = "Stoyan Grozdanov <grozdanovstoqn01@gmail.com>"
 edition = "2021"
 
 [dependencies]
@@ -11,6 +12,7 @@ sha-1 = "0.10.0"
 flate2 = "1.0.22"
 hex = "0.4.3"
 pathdiff = { version = "0.2.1", features = ["camino"] }
+clap = { version = "3.0.14", features = ["derive"] }
 
 [dev-dependencies]
 tempdir = "0.3.7"

@@ -5,6 +5,7 @@ pub enum Errors {
   ExistingRepositoryError,
   InvalidTreeNodeError,
   NodeConvertionError,
+  NotARepositoryError,
   UnrecognisedPath(String),
   DuplicateBranchNameError(String),
   MissingBranchError(String),
