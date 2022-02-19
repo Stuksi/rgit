@@ -3,19 +3,23 @@ pub mod constants;
 pub mod user;
 pub mod object;
 
-use std::{env, io::{Read, Write}, fs::{File, self}};
+use std::{env, io::{Read, Write}, fs::{File, self}, collections::HashSet};
 use camino::{Utf8PathBuf, Utf8Path};
 use flate2::{read::{ZlibEncoder, ZlibDecoder}, Compression};
 use pathdiff::diff_utf8_paths;
 use sha1::{Sha1, Digest};
+use walkdir::WalkDir;
 use self::{errors::Errors, constants::*, object::Object};
 
 pub fn locale() -> Utf8PathBuf {
   Utf8PathBuf::from(env::var(PROJECT_ENV).unwrap())
 }
 
-pub fn locale_relative<P: AsRef<Utf8Path>>(path: P) -> Utf8PathBuf {
-  diff_utf8_paths(path.as_ref(), locale()).unwrap_or(Utf8PathBuf::from(""))
+pub fn relative<P: AsRef<Utf8Path>>(path: P) -> Utf8PathBuf {
+  match diff_utf8_paths(path, locale()) {
+    Some(path) => path,
+    None => Utf8PathBuf::new()
+  }
 }
 
 pub fn initialize() -> Result<(), Errors> {
@@ -95,4 +99,26 @@ pub fn write_object_bytes<B: AsRef<[u8]>>(object_type: Object, bytes: B) -> Resu
   }
 
   Ok(id)
+}
+
+pub fn folder_files<P: AsRef<Utf8Path>>(path: P) -> Result<HashSet<Utf8PathBuf>, Errors> {
+  let walker = WalkDir::new(locale().join(path))
+    .into_iter()
+    .filter_entry(|entry| entry.file_name().to_str().unwrap_or(REPOSITORY_FOLDER_NAME) != REPOSITORY_FOLDER_NAME);
+  let mut file_paths = HashSet::new();
+
+  for entry in walker {
+    let entry = entry?;
+    let entry_path = entry.into_path();
+
+    if entry_path.is_file() {
+      if let Ok(file_path) = Utf8PathBuf::from_path_buf(entry_path) {
+        file_paths.insert(file_path);
+      } else {
+        return Err(Errors::BadUTF8PathError);
+      }
+    }
+  }
+
+  Ok(file_paths)
 }

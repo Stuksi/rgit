@@ -1,9 +1,10 @@
 mod user;
 
-use std::{fs::File, io::Read};
+use std::{fs::File, io::Read, collections::HashSet};
+use camino::Utf8PathBuf;
 use serial_test::serial;
-use crate::lib::{locale, write_object_bytes, object::Object, constants::OBJECTS_PATH, read_object_bytes};
-use super::run_unit;
+use crate::{lib::{*, object::Object, constants::OBJECTS_PATH}, tests::factory::tree};
+use super::{run_unit, factory::TREE_PATHS};
 
 const DUMMY_TEXT: &str = "Lorem ipsum dolor sit amet, consectetur adipiscing elit.";
 
@@ -17,6 +18,7 @@ fn initialize_creates_the_repository_folder_in_the_current_locale() {
     assert!(locale.join(".rgit/objects/").exists());
     assert!(locale.join(".rgit/branches/").exists());
     assert!(locale.join(".rgit/HEAD").exists());
+    assert!(locale.join(".rgit/index").exists());
 
     let mut config = String::new();
     File::open(locale.join(".rgit/config")).unwrap().read_to_string(&mut config).unwrap();
@@ -29,7 +31,7 @@ fn initialize_creates_the_repository_folder_in_the_current_locale() {
 
     assert_eq!(config, "admin admin");
     assert_eq!(head, "master");
-    assert_eq!(master, "");
+    assert!(master.is_empty());
   });
 }
 
@@ -66,5 +68,36 @@ fn read_object_bytes_given_an_id_returns_the_object_data() {
     assert_eq!(text_1, DUMMY_TEXT.as_bytes());
     assert_eq!(text_2, DUMMY_TEXT.as_bytes());
     assert_eq!(text_3, DUMMY_TEXT.as_bytes());
+  });
+}
+
+#[test]
+#[serial]
+fn folder_files_given_path_returns_list_of_files_descending_of_path() {
+  run_unit(|| {
+    let locale = locale();
+    tree().unpack(&locale).unwrap();
+
+    let files_1 = folder_files(&locale).unwrap();
+    let files_2 = folder_files(locale.join("b/a/")).unwrap();
+    let files_3 = folder_files(locale.join("c/b/a")).unwrap();
+
+    let all_test_file_paths = TREE_PATHS.iter()
+      .map(|path| locale.join(path))
+      .collect::<HashSet<Utf8PathBuf>>();
+
+    assert_eq!(files_1, all_test_file_paths);
+    assert_eq!(files_2, HashSet::from_iter([locale.join("b/a/a"), locale.join("b/a/b"), locale.join("b/a/c")].into_iter()));
+    assert_eq!(files_3, HashSet::from_iter([locale.join("c/b/a")].into_iter()));
+  });
+}
+
+#[test]
+#[serial]
+fn relative_given_path_returns_project_relative_path() {
+  run_unit(|| {
+    let path = locale().join("a/a/a");
+
+    assert_eq!(relative(path), "a/a/a");
   });
 }

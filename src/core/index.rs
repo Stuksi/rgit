@@ -1,13 +1,13 @@
-use std::{collections::HashMap, io::{Read, Write}, fs::{File, OpenOptions}};
-use camino::Utf8Path;
+use std::{collections::HashMap, io::{Read, Write}, fs::{File, OpenOptions}, str::FromStr};
+use camino::{Utf8Path, Utf8PathBuf};
 use getset::Getters;
-use crate::lib::{errors::Errors, locale, constants::INDEX_PATH, locale_relative, compress, decompress};
+use crate::lib::{*, errors::Errors, constants::{INDEX_PATH, DELETED_INDEX_STAGE}};
 use super::{tree::{Tree, Node}, head::Head, blob::Blob};
 
 #[derive(Getters)]
 pub struct Index {
   #[getset(get = "pub")]
-  staged_paths: HashMap<String, String>
+  staged_paths: HashMap<Utf8PathBuf, String>
 }
 
 impl Index {
@@ -19,11 +19,11 @@ impl Index {
     };
 
     for path in paths {
-      if !path.as_ref().exists() {
-        return Err(Errors::UnrecognisedPath(path.as_ref().to_string()));
-      }
-
-      index.diff_and_insert(path, &tree)?;
+      match tree.get(relative(path)) {
+        Some(Node::Blob(blob)) => index.stage_file(path.as_ref(), blob),
+        Some(Node::Tree(tree)) => index.stage_folder(path.as_ref(), tree),
+        None => index.stage_untracked(path.as_ref()),
+      }?;
     }
 
     index.save()
@@ -31,10 +31,14 @@ impl Index {
 
   pub fn remove<P: AsRef<Utf8Path>>(paths: &[P]) -> Result<(), Errors> {
     let mut index = Self::get()?;
+    let staged_paths = index.staged_paths.clone();
 
     for path in paths {
-      let relative_path = locale_relative(&path);
-      index.staged_paths.remove(relative_path.as_str());
+      for (staged_path, _) in &staged_paths {
+        if staged_path.starts_with(relative(path)) {
+          index.staged_paths.remove(staged_path);
+        }
+      }
     }
 
     index.save()
@@ -47,24 +51,20 @@ impl Index {
     let mut compressed_data = Vec::new();
 
     File::open(location)?.read_to_end(&mut compressed_data)?;
-    let text = if compressed_data.is_empty() {
-      String::new()
-    } else {
+    let text = if !compressed_data.is_empty() {
       String::from_utf8(decompress(compressed_data)?)?
+    } else {
+      String::new()
     };
 
     let mut staged_paths = HashMap::new();
     for line in text.lines() {
-      if let [relative_path, id] = line.split_whitespace().collect::<Vec<&str>>()[..] {
-        staged_paths.insert(String::from(relative_path), String::from(id));
+      if let [path, stage] = line.split_whitespace().collect::<Vec<&str>>()[..] {
+        staged_paths.insert(Utf8PathBuf::from_str(path).unwrap(), String::from(stage));
       }
     }
 
-    Ok(
-      Index {
-        staged_paths
-      }
-    )
+    Ok(Index { staged_paths })
   }
 
   fn save(&self) -> Result<(), Errors> {
@@ -91,20 +91,100 @@ impl Index {
     Ok(())
   }
 
-  fn diff_and_insert<P: AsRef<Utf8Path>>(&mut self, path: P, tree: &Tree) -> Result<(), Errors> {
-    let mut bytes = Vec::new();
-    File::open(path.as_ref())?.read_to_end(&mut bytes)?;
+  fn stage_untracked(&mut self, path: &Utf8Path) -> Result<(), Errors> {
+    if !path.exists() {
+      return Err(Errors::UnrecognisedPath(path.to_string()));
+    }
 
-    let blob = Blob::new(bytes)?;
-    let relative_path = locale_relative(&path);
+    if path.is_dir() {
+      self.insert_folder(path)
+    } else {
+      self.insert_file(path)
+    }
+  }
 
-    if let Some(Node::Blob(tree_blob)) = tree.get(&relative_path) {
-      if tree_blob.id() == blob.id() {
-        return Ok(());
+  fn stage_file(&mut self, path: &Utf8Path, blob: &Blob) -> Result<(), Errors> {
+    if !path.exists() {
+      self.insert_deleted(path);
+      return Ok(());
+    }
+
+    if path.is_dir() {
+      self.insert_folder(path)?;
+    } else {
+      let blobified_file = Blob::from_path(path)?;
+
+      if blob != &blobified_file {
+        self.staged_paths.insert(relative(path), String::from(blobified_file.id()));
       }
     }
 
-    self.staged_paths.insert(String::from(relative_path), String::from(blob.id()));
     Ok(())
+  }
+
+  fn stage_folder(&mut self, path: &Utf8Path, tree: &Tree) -> Result<(), Errors> {
+    let blobs = tree.blobs();
+
+    if !path.exists() {
+      for (blob_path, _) in &blobs {
+        self.insert_deleted(&locale().join(blob_path));
+      }
+
+      return Ok(());
+    }
+
+    if path.is_dir() {
+      let file_paths = folder_files(path)?;
+
+      for (blob_path, _) in &blobs {
+        let full_blob_path = locale().join(blob_path);
+
+        if !file_paths.contains(&full_blob_path) {
+          self.insert_deleted(&full_blob_path);
+        }
+      }
+
+      for file_path in file_paths {
+        let blob = blobs.get(&file_path);
+
+        match blob {
+          Some(blob) => {
+            let blobified_file = Blob::from_path(&file_path)?;
+
+            if blob != &&blobified_file {
+              self.staged_paths.insert(relative(file_path), String::from(blobified_file.id()));
+            }
+          },
+          None => {
+            self.insert_file(&file_path)?;
+          }
+        }
+      }
+    } else {
+      self.insert_file(path)?;
+    }
+
+    Ok(())
+  }
+
+  fn insert_folder(&mut self, path: &Utf8Path) -> Result<(), Errors> {
+    let file_paths = folder_files(path)?;
+
+    for file_path in file_paths {
+      self.insert_file(&file_path)?;
+    }
+
+    Ok(())
+  }
+
+  fn insert_file(&mut self, path: &Utf8Path) -> Result<(), Errors> {
+    let blob = Blob::from_path(path)?;
+    self.staged_paths.insert(relative(path), String::from(blob.id()));
+
+    Ok(())
+  }
+
+  fn insert_deleted(&mut self, path: &Utf8Path) {
+    self.staged_paths.insert(relative(path), String::from(DELETED_INDEX_STAGE));
   }
 }

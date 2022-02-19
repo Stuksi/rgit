@@ -1,5 +1,5 @@
-use std::{collections::HashMap, fs::{self, File}, io::Write};
-use camino::Utf8Path;
+use std::{collections::{HashMap, VecDeque}, fs::{self, File}, io::Write};
+use camino::{Utf8Path, Utf8PathBuf};
 use getset::Getters;
 use crate::lib::{object::{Object, FromId}, errors::Errors, read_object_bytes, constants::{BLOB_TYPE, TREE_TYPE}, write_object_bytes};
 use super::blob::Blob;
@@ -153,6 +153,28 @@ impl Tree {
 
     Ok(())
   }
+
+  pub fn blob_iter(&self) -> BlobIterator {
+    let mut queue = VecDeque::new();
+
+    for (name, node) in &self.children {
+      queue.push_front((Utf8PathBuf::from(name), node));
+    }
+
+    BlobIterator {
+      queue
+    }
+  }
+
+  pub fn blobs(&self) -> HashMap<Utf8PathBuf, &Blob> {
+    let mut blobs = HashMap::new();
+
+    for (path, blob) in self.blob_iter() {
+      blobs.insert(path, blob);
+    }
+
+    blobs
+  }
 }
 
 impl FromId for Tree {
@@ -181,5 +203,26 @@ impl FromId for Tree {
         children,
       }
     )
+  }
+}
+
+pub struct BlobIterator<'a> {
+  queue: VecDeque<(Utf8PathBuf, &'a Node)>,
+}
+
+impl<'a> Iterator for BlobIterator<'a> {
+  type Item = (Utf8PathBuf, &'a Blob);
+
+  fn next(&mut self) -> Option<Self::Item> {
+    while let Some((path, Node::Tree(tree))) = self.queue.front() {
+      let path_clone = path.clone();
+      for (name, node) in &tree.children {
+        self.queue.push_back((path_clone.join(name), node));
+      }
+
+      self.queue.pop_front();
+    }
+
+    self.queue.front().map(|(path, node)| (path.clone(), node.into_blob().unwrap()))
   }
 }

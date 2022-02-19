@@ -1,6 +1,6 @@
 use std::{fs::File, io::Read};
 use serial_test::serial;
-use crate::{tests::{run_unit, gens::tree}, core::commit::Commit, lib::{locale, constants::OBJECTS_PATH, decompress, errors::Errors, object::FromId}};
+use crate::{tests::{run_unit, factory::tree}, core::commit::Commit, lib::{locale, constants::OBJECTS_PATH, decompress, errors::Errors, object::FromId}};
 
 #[test]
 #[serial]

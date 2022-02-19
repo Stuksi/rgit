@@ -1,3 +1,5 @@
+use std::{fs::File, io::Read};
+use camino::Utf8Path;
 use getset::Getters;
 use crate::lib::{errors::Errors, object::{FromId, Object}, write_object_bytes, locale, constants::OBJECTS_PATH};
 
@@ -10,6 +12,18 @@ pub struct Blob {
 impl Blob {
   pub fn new<B: AsRef<[u8]>>(bytes: B) -> Result<Self, Errors> {
     let id = write_object_bytes(Object::Blob, bytes)?;
+    Ok(Blob { id })
+  }
+
+  pub fn from_path<P: AsRef<Utf8Path>>(path: P) -> Result<Self, Errors> {
+    if !path.as_ref().is_file() {
+      return Err(Errors::BadFilePath);
+    }
+
+    let mut file_bytes = Vec::new();
+    File::open(path.as_ref())?.read_to_end(&mut file_bytes)?;
+    let id = write_object_bytes(Object::Blob, file_bytes)?;
+
     Ok(Blob { id })
   }
 }

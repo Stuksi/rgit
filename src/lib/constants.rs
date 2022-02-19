@@ -10,3 +10,6 @@ pub const INDEX_PATH: &str = ".rgit/index";
 pub const BLOB_TYPE: &str = "blob";
 pub const TREE_TYPE: &str = "tree";
 pub const COMMIT_TYPE: &str = "cmit";
+
+pub const REPOSITORY_FOLDER_NAME: &str = ".rgit";
+pub const DELETED_INDEX_STAGE: &str = "DELETED";

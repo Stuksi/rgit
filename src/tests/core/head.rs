@@ -1,6 +1,6 @@
 use std::{fs::File, io::Read};
 use serial_test::serial;
-use crate::{tests::{run_unit, gens::{commit, branch}}, core::{head::{Head, Reference}, branch::Branch}, lib::{locale, constants::HEAD_PATH}};
+use crate::{tests::{run_unit, factory::{commit, branch}}, core::{head::{Head, Reference}, branch::Branch}, lib::{locale, constants::HEAD_PATH}};
 
 #[test]
 #[serial]

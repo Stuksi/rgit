@@ -1,6 +1,6 @@
 use std::{fs::File, io::Read};
 use serial_test::serial;
-use crate::{core::tree::{Tree, Node}, tests::{run_unit, gens::{blob, blob_and_text}}, lib::{decompress, locale, constants::OBJECTS_PATH, object::FromId}};
+use crate::{core::tree::{Tree, Node}, tests::{run_unit, factory::{blob, blob_and_text}}, lib::{decompress, locale, constants::OBJECTS_PATH, object::FromId}};
 
 #[test]
 #[serial]
@@ -8,7 +8,7 @@ fn new_initializes_empty_tree() {
   run_unit(|| {
     let root = Tree::new();
 
-    assert_eq!(root.id(), "");
+    assert!(root.id().is_empty());
     assert!(root.children().is_empty());
   });
 }

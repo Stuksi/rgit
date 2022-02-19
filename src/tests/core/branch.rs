@@ -1,12 +1,12 @@
 use std::{fs::File, io::Read};
 use serial_test::serial;
-use crate::{tests::{run_unit, gens::commit}, core::branch::Branch, lib::{constants::BRANCHES_PATH, locale, errors::Errors}};
+use crate::{tests::{run_unit, factory::commit}, core::branch::Branch, lib::{constants::BRANCHES_PATH, locale, errors::Errors}};
 
 const TEST_BRANCH_NAME: &str = "test-branch-name";
 
 #[test]
 #[serial]
-fn new_given_name_and_some_commit_creates_and_returnss_branch() {
+fn new_given_name_and_some_commit_creates_branch() {
   run_unit(|| {
     let commit = commit();
     let branch = Branch::new(TEST_BRANCH_NAME, Some(commit.id())).unwrap();
@@ -21,7 +21,7 @@ fn new_given_name_and_some_commit_creates_and_returnss_branch() {
 
 #[test]
 #[serial]
-fn new_given_name_and_no_commit_creates_and_returns_branch() {
+fn new_given_name_and_no_commit_creates_branch() {
   run_unit(|| {
     let branch = Branch::new(TEST_BRANCH_NAME, None).unwrap();
 
@@ -29,7 +29,7 @@ fn new_given_name_and_no_commit_creates_and_returns_branch() {
     let location = locale().join(BRANCHES_PATH).join(branch.name());
     File::open(location).unwrap().read_to_string(&mut none).unwrap();
 
-    assert_eq!(none, "");
+    assert!(none.is_empty());
   });
 }
 
@@ -153,6 +153,6 @@ fn initial_branch_file() {
 
     File::open(location).unwrap().read_to_string(&mut commit_id).unwrap();
 
-    assert_eq!(commit_id, "");
+    assert!(commit_id.is_empty());
   });
 }

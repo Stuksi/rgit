@@ -1,6 +1,6 @@
-pub mod blob;
-pub mod tree;
-pub mod commit;
-pub mod branch;
-pub mod head;
-pub mod index;
+mod blob;
+mod tree;
+mod commit;
+mod branch;
+mod head;
+mod index;
