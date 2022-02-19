@@ -1,7 +1,13 @@
 use crate::{lib::{errors::Errors, constants::DELETED_INDEX_STAGE, object::FromId}, core::{head::{Head, Reference}, tree::{Tree, Node}, index::Index, blob::Blob, commit::Commit, branch::Branch}};
+use super::status::status;
 
 pub fn commit(message: String) -> Result<(), Errors> {
   let index = Index::get()?;
+
+  if index.staged_paths().is_empty() {
+    return status();
+  }
+
   let head = Head::get()?;
   let parent_commit = head.commit();
   let mut tree = match &parent_commit {

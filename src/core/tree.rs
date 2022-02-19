@@ -161,9 +161,7 @@ impl Tree {
       queue.push_front((Utf8PathBuf::from(name), node));
     }
 
-    BlobIterator {
-      queue
-    }
+    BlobIterator { queue }
   }
 
   pub fn blobs(&self) -> HashMap<Utf8PathBuf, &Blob> {
@@ -223,6 +221,6 @@ impl<'a> Iterator for BlobIterator<'a> {
       self.queue.pop_front();
     }
 
-    self.queue.front().map(|(path, node)| (path.clone(), node.into_blob().unwrap()))
+    self.queue.pop_front().map(|(path, node)| (path.clone(), node.into_blob().unwrap()))
   }
 }

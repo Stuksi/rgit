@@ -34,7 +34,7 @@ impl Commit {
 
     let date = Utc::now();
     let author = User::get()?;
-    let bytes = format!("{} {} {} {} {} {}",
+    let bytes = format!("{}\n{}\n{}\n{}\n{}\n{}",
       parent_id.unwrap_or("0"),
       tree_id,
       message,
@@ -87,7 +87,7 @@ impl FromId for Commit {
       date,
       username,
       email,
-    ] = text.split_whitespace().collect::<Vec<&str>>()[..] {
+    ] = text.lines().collect::<Vec<&str>>()[..] {
       let parent_id = if parent_id == "0" {
         None
       } else {

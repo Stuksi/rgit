@@ -45,7 +45,7 @@ mod factory {
   ];
 
   pub fn blob() -> Blob {
-    Blob::new(lipsum(25).as_bytes()).unwrap()
+    Blob::new(lipsum(100).as_bytes()).unwrap()
   }
 
   pub fn blob_and_text() -> (Blob, String) {

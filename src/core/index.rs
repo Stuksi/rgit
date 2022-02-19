@@ -144,7 +144,7 @@ impl Index {
       let file_paths = folder_files(path)?;
 
       for (blob_path, _) in &blobs {
-        let full_blob_path = locale().join(blob_path);
+        let full_blob_path = path.join(blob_path);
 
         if !file_paths.contains(&full_blob_path) {
           self.insert_deleted(&full_blob_path);
@@ -152,14 +152,15 @@ impl Index {
       }
 
       for file_path in file_paths {
-        let blob = blobs.get(&file_path);
+        let relative_file_path = relative(&file_path);
+        let blob = blobs.get(&relative_file_path);
 
         match blob {
           Some(blob) => {
             let blobified_file = Blob::from_path(&file_path)?;
 
             if blob != &&blobified_file {
-              self.staged_paths.insert(relative(file_path), String::from(blobified_file.id()));
+              self.staged_paths.insert(relative_file_path, String::from(blobified_file.id()));
             }
           },
           None => {

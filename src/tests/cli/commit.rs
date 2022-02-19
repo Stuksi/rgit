@@ -42,16 +42,16 @@ fn commit_handles_message_option_with_single_argument() {
   });
 }
 
-// #[test]
-// #[serial]
-// fn it_outputs_staging_status_on_empty_index() {
-//   run_acceptance("commit", |command| {
-//     let output = command.args(["-m", "TEST_COMMIT_MESSAGE"]).output().unwrap().stdout;
-//     let expected_output_slice = format!("On branch master");
+#[test]
+#[serial]
+fn it_outputs_staging_status_on_empty_index() {
+  run_acceptance("commit", |command| {
+    let output = command.args(["-m", "commit-message"]).output().unwrap().stdout;
+    let expected_output_slice = format!("On branch master");
 
-//     assert_eq!(output.starts_with(expected_output_slice.as_bytes()), true);
-//   })
-// }
+    assert!(output.starts_with(expected_output_slice.as_bytes()));
+  })
+}
 
 #[test]
 #[serial]

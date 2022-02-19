@@ -15,7 +15,7 @@ fn new_given_parent_commit_and_tree_creates_commit() {
     let location = locale().join(OBJECTS_PATH).join(&commit.id()[..2]).join(&commit.id()[2..]);
     File::open(location).unwrap().read_to_end(&mut compressed).unwrap();
 
-    let expected = format!("cmit{} {} {} {} {} {}",
+    let expected = format!("cmit{}\n{}\n{}\n{}\n{}\n{}",
       "0",
       tree.id(),
       "commit-message",

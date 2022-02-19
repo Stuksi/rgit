@@ -48,7 +48,7 @@ pub struct ErrorsInterface;
 impl ErrorsInterface {
   pub fn handle(error: Errors) {
     match error {
-      Errors::MissingRepository => println!("error: not a rgit repository (or any of the parent directories"),
+      Errors::MissingRepository => println!("error: not a rgit repository (or any of the parent directories)"),
       Errors::ExistingRepository => println!("error: rgit repository already instantiated in current working environment"),
       Errors::ExistingBranch(name) => println!("error: a branch named '{}' already exists", name),
       Errors::BadPathEncoding => println!("error: bad path encoding (only utf8 is supported)"),

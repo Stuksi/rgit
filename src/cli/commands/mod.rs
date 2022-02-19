@@ -4,6 +4,7 @@ pub mod restore;
 pub mod commit;
 pub mod switch;
 pub mod config;
+pub mod status;
 
 use std::path::PathBuf;
 use clap::Subcommand;
@@ -51,4 +52,7 @@ pub enum Commands {
     #[clap(long, required_unless_present = "username")]
     email: Option<String>,
   },
+
+  #[clap(about = "Show the working tree status")]
+  Status,
 }
