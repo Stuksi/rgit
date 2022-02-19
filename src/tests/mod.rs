@@ -65,7 +65,7 @@ mod factory {
   }
 
   pub fn commit() -> Commit {
-    Commit::new(None, tree().id()).unwrap()
+    Commit::new(None, tree().id(), &lipsum(1)).unwrap()
   }
 
   pub fn branch() -> Branch {

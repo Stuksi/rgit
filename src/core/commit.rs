@@ -15,6 +15,9 @@ pub struct Commit {
   tree_id: String,
 
   #[getset(get = "pub")]
+  message: String,
+
+  #[getset(get = "pub")]
   date: DateTime<Utc>,
 
   #[getset(get = "pub")]
@@ -22,7 +25,7 @@ pub struct Commit {
 }
 
 impl Commit {
-  pub fn new(parent_id: Option<&str>, tree_id: &str) -> Result<Self, Errors> {
+  pub fn new(parent_id: Option<&str>, tree_id: &str, message: &str) -> Result<Self, Errors> {
     let tree_location = locale().join(OBJECTS_PATH).join(&tree_id[..2]).join(&tree_id[2..]);
 
     if !tree_location.exists() {
@@ -31,9 +34,10 @@ impl Commit {
 
     let date = Utc::now();
     let author = User::get()?;
-    let bytes = format!("{} {} {} {} {}",
+    let bytes = format!("{} {} {} {} {} {}",
       parent_id.unwrap_or("0"),
       tree_id,
+      message,
       date.to_rfc3339(),
       author.username(),
       author.email(),
@@ -45,6 +49,7 @@ impl Commit {
         id,
         parent_id: parent_id.map(|id| String::from(id)),
         tree_id: String::from(tree_id),
+        message: String::from(message),
         date,
         author: User::get()?,
       }
@@ -78,6 +83,7 @@ impl FromId for Commit {
     if let [
       parent_id,
       tree_id,
+      message,
       date,
       username,
       email,
@@ -93,6 +99,7 @@ impl FromId for Commit {
           id: String::from(id),
           parent_id,
           tree_id: String::from(tree_id),
+          message: String::from(message),
           date: DateTime::parse_from_rfc3339(date)?.with_timezone(&Utc),
           author: User::new(username, email)?,
         }

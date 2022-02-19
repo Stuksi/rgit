@@ -11,6 +11,27 @@ pub struct Index {
 }
 
 impl Index {
+  pub fn get() -> Result<Self, Errors> {
+    let location = locale().join(INDEX_PATH);
+    let mut compressed_data = Vec::new();
+
+    File::open(location)?.read_to_end(&mut compressed_data)?;
+    let text = if !compressed_data.is_empty() {
+      String::from_utf8(decompress(compressed_data)?)?
+    } else {
+      String::new()
+    };
+
+    let mut staged_paths = HashMap::new();
+    for line in text.lines() {
+      if let [path, stage] = line.split_whitespace().collect::<Vec<&str>>()[..] {
+        staged_paths.insert(Utf8PathBuf::from_str(path).unwrap(), String::from(stage));
+      }
+    }
+
+    Ok(Index { staged_paths })
+  }
+
   pub fn add<P: AsRef<Utf8Path>>(paths: &[P]) -> Result<(), Errors> {
     let mut index = Self::get()?;
     let tree = match Head::get()?.commit() {
@@ -44,28 +65,14 @@ impl Index {
     index.save()
   }
 
-  // private
-
-  fn get() -> Result<Self, Errors> {
+  pub fn clear() -> Result<(), Errors> {
     let location = locale().join(INDEX_PATH);
-    let mut compressed_data = Vec::new();
+    File::create(location)?.set_len(0)?;
 
-    File::open(location)?.read_to_end(&mut compressed_data)?;
-    let text = if !compressed_data.is_empty() {
-      String::from_utf8(decompress(compressed_data)?)?
-    } else {
-      String::new()
-    };
-
-    let mut staged_paths = HashMap::new();
-    for line in text.lines() {
-      if let [path, stage] = line.split_whitespace().collect::<Vec<&str>>()[..] {
-        staged_paths.insert(Utf8PathBuf::from_str(path).unwrap(), String::from(stage));
-      }
-    }
-
-    Ok(Index { staged_paths })
+    Ok(())
   }
+
+  // private
 
   fn save(&self) -> Result<(), Errors> {
     let location = locale().join(INDEX_PATH);

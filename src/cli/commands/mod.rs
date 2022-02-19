@@ -5,6 +5,7 @@ pub mod commit;
 pub mod switch;
 pub mod config;
 
+use std::path::PathBuf;
 use clap::Subcommand;
 
 #[derive(Subcommand)]
@@ -14,12 +15,14 @@ pub enum Commands {
 
   #[clap(about = "Stages files for commit")]
   Add {
-    files: Vec<String>,
+    #[clap(required = true)]
+    paths: Vec<PathBuf>,
   },
 
   #[clap(about = "Unstages staged files")]
   Restore {
-    files: Vec<String>,
+    #[clap(required = true)]
+    paths: Vec<PathBuf>,
   },
 
   #[clap(about = "Creates a snapshot of the changes")]
@@ -45,7 +48,7 @@ pub enum Commands {
     #[clap(long, required_unless_present = "email")]
     username: Option<String>,
 
-    #[clap(long, required_unless_present = "email")]
+    #[clap(long, required_unless_present = "username")]
     email: Option<String>,
   },
 }

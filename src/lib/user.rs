@@ -40,9 +40,10 @@ impl User {
     }
   }
 
-  pub fn set(username: &str, email: &str) -> Result<(), Errors> {
+  pub fn set_username(username: &str) -> Result<(), Errors> {
+    let user = User::get()?;
     let location = locale().join(CONFIG_PATH);
-    let config = format!("{} {}", username, email);
+    let config = format!("{} {}", username, user.email());
 
     OpenOptions::new()
       .write(true)
@@ -50,6 +51,22 @@ impl User {
       .create(true)
       .open(location)?
       .write_all(config.as_bytes())?;
+
+    Ok(())
+  }
+
+  pub fn set_email(email: &str) -> Result<(), Errors> {
+    let user = User::get()?;
+    let location = locale().join(CONFIG_PATH);
+    let config = format!("{} {}", user.username(), email);
+
+    OpenOptions::new()
+      .write(true)
+      .truncate(true)
+      .create(true)
+      .open(location)?
+      .write_all(config.as_bytes())?;
+
     Ok(())
   }
 }

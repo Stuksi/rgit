@@ -1,5 +1,13 @@
-use crate::lib::errors::Errors;
+use std::env;
+use crate::lib::{errors::Errors, initialize, constants::{PROJECT_ENV, REPOSITORY_PATH}};
 
 pub fn init() -> Result<(), Errors> {
-  todo!()
+  let current_dir = env::current_dir()?;
+
+  if current_dir.join(REPOSITORY_PATH).exists() {
+    return Err(Errors::ExistingRepositoryError);
+  }
+
+  env::set_var(PROJECT_ENV, current_dir);
+  initialize()
 }

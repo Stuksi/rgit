@@ -3,7 +3,6 @@ use crate::{lib::user::User, tests::run_unit};
 
 const USERNAME: &str = "Jeremy";
 const EMAIL: &str = "jeremy@mail.com";
-
 const ADMIN: &str = "admin";
 
 #[test]
@@ -30,12 +29,24 @@ fn get_returns_the_stored_user() {
 
 #[test]
 #[serial]
-fn set_given_username_and_email_changes_the_current_user() {
+fn set_username_given_username_changes_the_current_user_username() {
   run_unit(|| {
-    User::set(USERNAME, EMAIL).unwrap();
+    User::set_username(USERNAME).unwrap();
     let user = User::get().unwrap();
 
     assert_eq!(user.username(), USERNAME);
+    assert_eq!(user.email(), ADMIN);
+  });
+}
+
+#[test]
+#[serial]
+fn set_email_given_email_changes_the_current_user_email() {
+  run_unit(|| {
+    User::set_email(EMAIL).unwrap();
+    let user = User::get().unwrap();
+
+    assert_eq!(user.username(), ADMIN);
     assert_eq!(user.email(), EMAIL);
   });
 }
