@@ -36,7 +36,7 @@ impl User {
         }
       )
     } else {
-      return Err(Errors::BadObjectStructureError);
+      return Err(Errors::BadObjectStructure);
     }
   }
 

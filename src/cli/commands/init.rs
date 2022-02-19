@@ -5,9 +5,11 @@ pub fn init() -> Result<(), Errors> {
   let current_dir = env::current_dir()?;
 
   if current_dir.join(REPOSITORY_PATH).exists() {
-    return Err(Errors::ExistingRepositoryError);
+    return Err(Errors::ExistingRepository);
   }
 
   env::set_var(PROJECT_ENV, current_dir);
-  initialize()
+  initialize()?;
+
+  Ok(())
 }

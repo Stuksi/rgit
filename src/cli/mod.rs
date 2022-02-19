@@ -53,7 +53,7 @@ impl Interface {
       current_path = path.parent();
     }
 
-    Err(Errors::NotARepositoryError)
+    Err(Errors::MissingRepository)
   }
 }
 
@@ -62,11 +62,11 @@ pub fn configure_input_paths(paths: &[PathBuf]) -> Result<Vec<Utf8PathBuf>, Erro
   let locale = locale();
 
   for path in paths {
-    let path = Utf8PathBuf::from_path_buf(PathBuf::from(path).clean()).map_err(|_| Errors::BadFilePath)?;
+    let path = Utf8PathBuf::from_path_buf(PathBuf::from(path).clean()).map_err(|_| Errors::BadPathEncoding)?;
 
     if path.is_absolute() {
       if !path.starts_with(&locale) {
-        return Err(Errors::BadFilePath);
+        return Err(Errors::UnrecognisedPath(path));
       }
 
       configured_paths.push(Utf8PathBuf::from(path));

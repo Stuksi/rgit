@@ -32,7 +32,7 @@ fn init_given_no_arguments_and_options_succeeds() {
 fn init_if_repository_exists_fails_with_error() {
   run_acceptance("init", |command| {
     let output = command.output().unwrap().stdout;
-    let expected_output = "error: rgit repository already exists in current directory\n";
+    let expected_output = "error: rgit repository already instantiated in current working environment\n";
 
     assert_eq!(output, expected_output.as_bytes());
   });

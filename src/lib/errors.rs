@@ -1,16 +1,18 @@
+use camino::Utf8PathBuf;
+
 #[derive(Debug)]
 pub enum Errors {
-  UnknownObjectError(String),
-  BadObjectStructureError,
-  BadFilePath,
-  ExistingRepositoryError,
-  InvalidTreeNodeError,
-  NodeConvertionError,
-  NotARepositoryError,
-  BadUTF8PathError,
-  UnrecognisedPath(String),
-  DuplicateBranchNameError(String),
-  MissingBranchError(String),
+  MissingRepository,
+  ExistingRepository,
+  ExistingBranch(String),
+  BadPathEncoding,
+  UnrecognisedPath(Utf8PathBuf),
+  UnrecognisedObject(String),
+  UnrecognisedBranch(String),
+
+  BadNodeConvertion,
+  BadObjectStructure,
+  UnrecognisedNodeType,
   IOError(std::io::Error),
   Utf8ConvertionError(std::string::FromUtf8Error),
   DateTimeParseError(chrono::ParseError),
@@ -46,8 +48,14 @@ pub struct ErrorsInterface;
 impl ErrorsInterface {
   pub fn handle(error: Errors) {
     match error {
-      Errors::ExistingRepositoryError => print!("error: rgit repository already exists in current directory\n"),
-      _ => println!("OK"),
-    }
+      Errors::MissingRepository => println!("error: not a rgit repository (or any of the parent directories"),
+      Errors::ExistingRepository => println!("error: rgit repository already instantiated in current working environment"),
+      Errors::ExistingBranch(name) => println!("error: a branch named '{}' already exists", name),
+      Errors::BadPathEncoding => println!("error: bad path encoding (only utf8 is supported)"),
+      Errors::UnrecognisedPath(path) => println!("error: path '{}' did not match any files", path),
+      Errors::UnrecognisedObject(id) => println!("error: object identificator '{}' did not match any object", id),
+      Errors::UnrecognisedBranch(name) => println!("error: branch name '{}' does not exist", name),
+      _ => print!("fatal: Internal Error")
+    };
   }
 }

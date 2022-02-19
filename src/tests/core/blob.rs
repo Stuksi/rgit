@@ -40,7 +40,7 @@ fn from_path_given_path_creates_blob() {
 #[serial]
 fn from_id_given_non_existing_id_return_unknown_object_error() {
   run_unit(|| {
-    if let Err(Errors::UnknownObjectError(id)) = Blob::from_id("invalid-id") {
+    if let Err(Errors::UnrecognisedObject(id)) = Blob::from_id("invalid-id") {
       assert_eq!(id, "invalid-id");
     } else {
       unreachable!();

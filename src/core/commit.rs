@@ -29,7 +29,7 @@ impl Commit {
     let tree_location = locale().join(OBJECTS_PATH).join(&tree_id[..2]).join(&tree_id[2..]);
 
     if !tree_location.exists() {
-      return Err(Errors::UnknownObjectError(String::from(tree_id)));
+      return Err(Errors::UnrecognisedObject(String::from(tree_id)));
     }
 
     let date = Utc::now();
@@ -105,7 +105,7 @@ impl FromId for Commit {
         }
       )
     } else {
-      Err(Errors::BadObjectStructureError)
+      Err(Errors::BadObjectStructure)
     }
   }
 }

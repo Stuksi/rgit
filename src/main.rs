@@ -1,3 +1,5 @@
+#![allow(dead_code)]
+
 mod core;
 mod lib;
 mod cli;
@@ -6,5 +8,7 @@ mod cli;
 mod tests;
 
 fn main() {
-  cli::run().unwrap();
+  if let Err(error) = cli::Interface::run() {
+    lib::errors::ErrorsInterface::handle(error);
+  }
 }

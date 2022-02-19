@@ -27,7 +27,7 @@ pub fn initialize() -> Result<(), Errors> {
   let repository = locale.join(REPOSITORY_PATH);
 
   if repository.exists() {
-    return Err(Errors::ExistingRepositoryError);
+    return Err(Errors::ExistingRepository);
   }
 
   let objects = locale.join(OBJECTS_PATH);
@@ -70,7 +70,7 @@ pub fn read_object_bytes(id: &str) -> Result<Vec<u8>, Errors> {
   let location = locale().join(OBJECTS_PATH).join(&id[..2]).join(&id[2..]);
 
   if !location.exists() {
-    return Err(Errors::UnknownObjectError(String::from(id)));
+    return Err(Errors::UnrecognisedObject(String::from(id)));
   }
 
   let mut compressed = Vec::new();
@@ -115,7 +115,7 @@ pub fn folder_files<P: AsRef<Utf8Path>>(path: P) -> Result<HashSet<Utf8PathBuf>,
       if let Ok(file_path) = Utf8PathBuf::from_path_buf(entry_path) {
         file_paths.insert(file_path);
       } else {
-        return Err(Errors::BadUTF8PathError);
+        return Err(Errors::BadPathEncoding);
       }
     }
   }

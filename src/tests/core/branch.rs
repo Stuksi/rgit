@@ -39,7 +39,7 @@ fn new_given_existing_name_returns_duplicate_branch_error() {
   run_unit(|| {
     Branch::new(TEST_BRANCH_NAME, None).unwrap();
 
-    if let Err(Errors::DuplicateBranchNameError(name)) = Branch::new(TEST_BRANCH_NAME, None) {
+    if let Err(Errors::ExistingBranch(name)) = Branch::new(TEST_BRANCH_NAME, None) {
       assert_eq!(name, TEST_BRANCH_NAME);
     } else {
       unreachable!();
@@ -64,7 +64,7 @@ fn get_given_name_returns_branch() {
 #[serial]
 fn get_given_non_existing_name_returns_missing_branch_error() {
   run_unit(|| {
-    if let Err(Errors::MissingBranchError(name)) = Branch::get(TEST_BRANCH_NAME) {
+    if let Err(Errors::UnrecognisedBranch(name)) = Branch::get(TEST_BRANCH_NAME) {
       assert_eq!(name, TEST_BRANCH_NAME);
     } else {
       unreachable!();
@@ -91,7 +91,7 @@ fn set_given_name_updates_branch_commit_id() {
 fn set_given_non_existing_name_returns_missing_branch_error() {
   run_unit(|| {
     let commit = commit();
-    if let Err(Errors::MissingBranchError(name)) = Branch::set(TEST_BRANCH_NAME, commit.id()) {
+    if let Err(Errors::UnrecognisedBranch(name)) = Branch::set(TEST_BRANCH_NAME, commit.id()) {
       assert_eq!(name, TEST_BRANCH_NAME);
     } else {
       unreachable!();
@@ -115,7 +115,7 @@ fn remove_given_name_deletes_branch() {
 #[serial]
 fn remove_given_non_existing_name_returns_missing_branch_error() {
   run_unit(|| {
-    if let Err(Errors::MissingBranchError(name)) = Branch::remove(TEST_BRANCH_NAME) {
+    if let Err(Errors::UnrecognisedBranch(name)) = Branch::remove(TEST_BRANCH_NAME) {
       assert_eq!(name, TEST_BRANCH_NAME);
     } else {
       unreachable!();

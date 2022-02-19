@@ -32,14 +32,14 @@ impl Node {
   pub fn into_tree(&self) -> Result<&Tree, Errors> {
     match self {
       Node::Tree(tree) => Ok(tree),
-      _ => Err(Errors::NodeConvertionError)
+      _ => Err(Errors::BadNodeConvertion)
     }
   }
 
   pub fn into_blob(&self) -> Result<&Blob, Errors> {
     match self {
       Node::Blob(blob) => Ok(blob),
-      _ => Err(Errors::NodeConvertionError)
+      _ => Err(Errors::BadNodeConvertion)
     }
   }
 }
@@ -188,12 +188,12 @@ impl FromId for Tree {
         let node = match object_type {
           BLOB_TYPE => Node::Blob(Blob::from_id(id)?),
           TREE_TYPE => Node::Tree(Tree::from_id(id)?),
-          _ => return Err(Errors::InvalidTreeNodeError),
+          _ => return Err(Errors::UnrecognisedNodeType),
         };
 
         children.insert(String::from(name), node);
       } else {
-        return Err(Errors::BadObjectStructureError);
+        return Err(Errors::BadObjectStructure);
       }
     }
 

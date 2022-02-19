@@ -33,7 +33,7 @@ fn new_given_parent_commit_and_tree_creates_commit() {
 #[serial]
 fn new_given_invalid_tree_returns_error() {
   run_unit(|| {
-    if let Err(Errors::UnknownObjectError(id)) = Commit::new(None, "invalid-id", COMMIT_MESSAGE) {
+    if let Err(Errors::UnrecognisedObject(id)) = Commit::new(None, "invalid-id", COMMIT_MESSAGE) {
       assert_eq!(id, "invalid-id");
     } else {
       unreachable!();

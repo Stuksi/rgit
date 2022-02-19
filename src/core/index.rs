@@ -100,7 +100,7 @@ impl Index {
 
   fn stage_untracked(&mut self, path: &Utf8Path) -> Result<(), Errors> {
     if !path.exists() {
-      return Err(Errors::UnrecognisedPath(path.to_string()));
+      return Err(Errors::UnrecognisedPath(Utf8PathBuf::from(path)));
     }
 
     if path.is_dir() {

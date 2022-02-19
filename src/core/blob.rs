@@ -16,10 +16,6 @@ impl Blob {
   }
 
   pub fn from_path<P: AsRef<Utf8Path>>(path: P) -> Result<Self, Errors> {
-    if !path.as_ref().is_file() {
-      return Err(Errors::BadFilePath);
-    }
-
     let mut file_bytes = Vec::new();
     File::open(path.as_ref())?.read_to_end(&mut file_bytes)?;
     let id = write_object_bytes(Object::Blob, file_bytes)?;
@@ -33,7 +29,7 @@ impl FromId for Blob {
     let location = locale().join(OBJECTS_PATH).join(&id[..2]).join(&id[2..]);
 
     if !location.exists() {
-      return Err(Errors::UnknownObjectError(String::from(id)));
+      return Err(Errors::UnrecognisedObject(String::from(id)));
     }
 
     Ok(

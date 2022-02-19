@@ -17,7 +17,7 @@ impl Branch {
     let location = locale().join(BRANCHES_PATH).join(name);
 
     if location.exists() {
-      return Err(Errors::DuplicateBranchNameError(String::from(name)));
+      return Err(Errors::ExistingBranch(String::from(name)));
     }
 
     File::create(location)?.write_all(commit_id.unwrap_or("").as_bytes())?;
@@ -34,7 +34,7 @@ impl Branch {
     let location = locale().join(BRANCHES_PATH).join(name);
 
     if !location.exists() {
-      return Err(Errors::MissingBranchError(String::from(name)));
+      return Err(Errors::UnrecognisedBranch(String::from(name)));
     }
 
     let mut commit_id = String::new();
@@ -58,7 +58,7 @@ impl Branch {
     let location = locale().join(BRANCHES_PATH).join(name);
 
     if !location.exists() {
-      return Err(Errors::MissingBranchError(String::from(name)));
+      return Err(Errors::UnrecognisedBranch(String::from(name)));
     }
 
     OpenOptions::new()
@@ -74,7 +74,7 @@ impl Branch {
     let location = locale().join(BRANCHES_PATH).join(name);
 
     if !location.exists() {
-      return Err(Errors::MissingBranchError(String::from(name)));
+      return Err(Errors::UnrecognisedBranch(String::from(name)));
     }
 
     fs::remove_file(location)?;
