@@ -5,6 +5,7 @@ pub mod commit;
 pub mod switch;
 pub mod config;
 pub mod status;
+pub mod branch;
 
 use std::path::PathBuf;
 use clap::Subcommand;
@@ -55,4 +56,10 @@ pub enum Commands {
 
   #[clap(about = "Show the working tree status")]
   Status,
+
+  #[clap(about = "List or delete branches")]
+  Branch {
+    #[clap(short)]
+    delete: Option<String>,
+  },
 }
