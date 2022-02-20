@@ -6,6 +6,7 @@ pub mod switch;
 pub mod config;
 pub mod status;
 pub mod branch;
+pub mod log;
 
 use std::path::PathBuf;
 use clap::Subcommand;
@@ -62,4 +63,7 @@ pub enum Commands {
     #[clap(short)]
     delete: Option<String>,
   },
+
+  #[clap(about = "Show commit logs")]
+  Log,
 }

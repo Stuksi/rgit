@@ -4,13 +4,13 @@ mod cli;
 
 use std::env;
 use assert_cmd::Command;
-use tempdir::TempDir;
+use tempfile::TempDir;
 use crate::lib::{constants::PROJECT_ENV, initialize};
 
 const TEMP_DIR_PREFIX: &str = "rgit-test";
 
 pub fn run_unit(body: fn()) {
-  let temp_dir = TempDir::new(TEMP_DIR_PREFIX).unwrap();
+  let temp_dir = TempDir::new().unwrap();
   env::set_var(PROJECT_ENV, temp_dir.path());
   initialize().unwrap();
 
@@ -18,7 +18,7 @@ pub fn run_unit(body: fn()) {
 }
 
 pub fn run_acceptance(name: &str, body: fn(command: &mut Command) -> ()) {
-  let temp_dir = TempDir::new(TEMP_DIR_PREFIX).unwrap();
+  let temp_dir = TempDir::new().unwrap();
   env::set_var(PROJECT_ENV, temp_dir.path());
   initialize().unwrap();
 

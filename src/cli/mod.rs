@@ -6,7 +6,7 @@ use clap::Parser;
 use path_clean::PathClean;
 use crate::lib::{errors::Errors, constants::{PROJECT_ENV, REPOSITORY_PATH, REPOSITORY_FOLDER_NAME}, locale};
 use commands::init::init;
-use self::commands::{Commands, add::add, restore::restore, commit::commit, switch::switch, config::config, status::status, branch::branch};
+use self::commands::{Commands, add::add, restore::restore, commit::commit, switch::switch, config::config, status::status, branch::branch, log::log};
 
 #[derive(Parser)]
 #[clap(name = "rgit")]
@@ -36,6 +36,7 @@ impl Interface {
       Commands::Config { username, email } => config(username, email),
       Commands::Status => status(),
       Commands::Branch { delete } => branch(delete),
+      Commands::Log => log(),
       _ => Ok(())
     }
   }
