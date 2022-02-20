@@ -6,7 +6,7 @@ use clap::Parser;
 use path_clean::PathClean;
 use crate::lib::{errors::Errors, constants::{PROJECT_ENV, REPOSITORY_PATH, REPOSITORY_FOLDER_NAME}, locale};
 use commands::init::init;
-use self::commands::{Commands, add::add, restore::restore, commit::commit, switch::switch, config::config, status::status};
+use self::commands::{Commands, add::add, restore::restore, commit::commit, switch::switch, config::config, status::status, branch::branch};
 
 #[derive(Parser)]
 #[clap(name = "rgit")]
@@ -35,6 +35,7 @@ impl Interface {
       Commands::Switch { new, commit, target } => switch(new, commit, target),
       Commands::Config { username, email } => config(username, email),
       Commands::Status => status(),
+      Commands::Branch { delete } => branch(delete),
       _ => Ok(())
     }
   }
@@ -63,16 +64,17 @@ pub fn configure_input_paths(paths: &[PathBuf]) -> Result<Vec<Utf8PathBuf>, Erro
   let locale = locale();
 
   for path in paths {
-    let path = Utf8PathBuf::from_path_buf(PathBuf::from(path).clean()).map_err(|_| Errors::BadPathEncoding)?;
-
     if path.is_absolute() {
-      if !path.starts_with(&locale) {
-        return Err(Errors::UnrecognisedPath(path));
+      let utf8_path = Utf8PathBuf::from_path_buf(path.clean()).map_err(|_| Errors::BadPathEncoding)?;
+
+      if !utf8_path.starts_with(&locale) {
+        return Err(Errors::UnrecognisedPath(utf8_path));
       }
 
-      configured_paths.push(Utf8PathBuf::from(path));
+      configured_paths.push(utf8_path);
     } else {
-      configured_paths.push(locale.join(path));
+      let utf8_path = Utf8PathBuf::from_path_buf(locale.as_std_path().join(path).clean()).map_err(|_| Errors::BadPathEncoding)?;
+      configured_paths.push(utf8_path);
     }
   }
 

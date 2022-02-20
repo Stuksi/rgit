@@ -40,11 +40,17 @@ impl Index {
     };
 
     for path in paths {
-      match tree.get(relative(path)) {
-        Some(Node::Blob(blob)) => index.stage_file(path.as_ref(), blob),
-        Some(Node::Tree(tree)) => index.stage_folder(path.as_ref(), tree),
-        None => index.stage_untracked(path.as_ref()),
-      }?;
+      let relative_path = relative(path);
+
+      if relative_path == "" {
+        index.stage_folder(path.as_ref(), &tree)?;
+      } else {
+        match tree.get(relative(path)) {
+          Some(Node::Blob(blob)) => index.stage_file(path.as_ref(), blob),
+          Some(Node::Tree(tree)) => index.stage_folder(path.as_ref(), tree),
+          None => index.stage_untracked(path.as_ref()),
+        }?;
+      }
     }
 
     index.save()
@@ -134,7 +140,7 @@ impl Index {
 
     if !path.exists() {
       for (blob_path, _) in &blobs {
-        self.insert_deleted(&locale().join(blob_path));
+        self.insert_deleted(&path.join(blob_path));
       }
 
       return Ok(());
